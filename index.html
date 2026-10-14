@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Competitive Exam Awareness - Live Web Platform</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 10v6M2 10l10-5 10 5-10 5z'/><path d='M6 12v5c3 3 9 3 12 0v-5'/></svg>" />
+  <!-- Approved Tailwind CSS -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .animate-pulse-subtle { animation: pulse-subtle 2s infinite ease-in-out; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: #f1f5f9; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- TOP ANNOUNCEMENT BANNER -->
+  <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2">
+    <span class="bg-blue-500/40 text-blue-100 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">New</span>
+    <span>Free Masterclass: "How to Prepare for UPSC & State PSC 2026" on Oct 25.</span>
+    <button onclick="navigate('seminars')" class="underline font-bold hover:text-blue-200 ml-1">Reserve Free Seat →</button>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo -->
+        <div onclick="navigate('home')" class="flex items-center gap-3 cursor-pointer group select-none">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+          </div>
+          <div>
+            <span class="font-extrabold text-slate-900 text-lg tracking-tight block leading-tight">
+              Exam<span class="text-blue-600">Awareness</span>
+            </span>
+            <span class="text-[10px] uppercase font-semibold text-slate-400 tracking-wider block">
+              Guidance & Seminars
+            </span>
+          </div>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden lg:flex items-center gap-1">
+          <button onclick="navigate('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-lg text-xs font-bold text-blue-600 bg-blue-50">Home</button>
+          <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">Dashboard</button>
+          <button onclick="navigate('exams')" id="nav-exams" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">Competitive Exams</button>
+          <button onclick="navigate('seminars')" id="nav-seminars" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">Seminars & Sessions</button>
+          <button onclick="navigate('strategies')" id="nav-strategies" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">Prep Strategies</button>
+          <button onclick="navigate('planner')" id="nav-planner" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">Study Planner</button>
+          <button onclick="navigate('admin')" id="nav-admin" class="nav-btn px-3 py-2 rounded-lg text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 hidden">Admin Panel</button>
+        </nav>
+
+        <!-- Right Quick Controls -->
+        <div class="flex items-center gap-2">
+          <!-- Role Switcher -->
+          <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
+            <button onclick="setRole('student')" id="btn-role-student" class="px-2.5 py-1 rounded-md font-bold bg-white text-blue-700 shadow-xs transition">Student</button>
+            <button onclick="setRole('admin')" id="btn-role-admin" class="px-2.5 py-1 rounded-md font-bold text-slate-500 hover:text-slate-800 transition">Admin</button>
+          </div>
+
+          <!-- Saved Items Icon -->
+          <button onclick="navigate('saved')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="Saved Items">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+            <span id="badge-saved-count" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+          </button>
+
+          <!-- Notifications Icon -->
+          <button onclick="navigate('notifications')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="Alerts">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+            <span id="badge-notif-count" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">2</span>
+          </button>
+
+          <!-- Profile -->
+          <button onclick="navigate('profile')" class="p-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">AS</div>
+            <span class="text-xs font-bold text-slate-800 hidden sm:inline" id="user-display-name">Aarav Sharma</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP ROUTING CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8" id="app-view">
+    <!-- Dynamic page views injected here via JS -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="space-y-3">
+          <div class="flex items-center gap-2 text-white font-extrabold text-base">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+            </div>
+            Competitive Exam Awareness
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Connecting Indian college students with expert civil servants, banking rankers, and faculty through structured awareness seminars.
+          </p>
+          <p class="text-xs text-slate-500">Helpline: 1800-123-STUDY</p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3">Sections</h4>
+          <ul class="space-y-2 text-xs">
+            <li><button onclick="navigate('exams')" class="hover:text-blue-400">Competitive Exams Directory</button></li>
+            <li><button onclick="navigate('seminars')" class="hover:text-blue-400">Seminars & Webinars</button></li>
+            <li><button onclick="navigate('strategies')" class="hover:text-blue-400">Preparation Blueprints</button></li>
+            <li><button onclick="navigate('planner')" class="hover:text-blue-400">Daily Study Planner</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3">Official Portals</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="https://upsc.gov.in" target="_blank" class="hover:text-white">UPSC (upsc.gov.in) ↗</a></li>
+            <li><a href="https://ssc.gov.in" target="_blank" class="hover:text-white">SSC (ssc.gov.in) ↗</a></li>
+            <li><a href="https://ibps.in" target="_blank" class="hover:text-white">IBPS (ibps.in) ↗</a></li>
+            <li><a href="https://indianrailways.gov.in" target="_blank" class="hover:text-white">RRB Railways ↗</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3">Notice Policy</h4>
+          <div class="p-3 rounded-xl bg-slate-800 text-xs text-slate-400 leading-relaxed">
+            All unverified exam dates are clearly tagged as tentative based on commission calendars. We never publish fabricated deadlines.
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 mt-8 pt-4 text-center text-xs text-slate-500">
+        © 2026 Competitive Exam Awareness Platform. Developed for student empowerment.
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: REGISTRATION FOR SEMINAR -->
+  <div id="modal-register" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in zoom-in-95" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900" id="reg-modal-title">Seminar Registration</h3>
+          <p class="text-xs text-slate-500">Free admission for college students & aspirants</p>
+        </div>
+        <button onclick="closeRegisterModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
+      </div>
+
+      <div id="reg-form-container">
+        <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Full Name *</label>
+            <input type="text" id="reg-name" required placeholder="Aarav Sharma" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Email *</label>
+              <input type="email" id="reg-email" required placeholder="student@example.com" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Phone / WhatsApp</label>
+              <input type="tel" id="reg-phone" placeholder="+91 98765 43210" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Education Level</label>
+              <select id="reg-education" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                <option>Undergraduate (Final Year)</option>
+                <option>Undergraduate (1st / 2nd Year)</option>
+                <option>Completed Graduation</option>
+                <option>12th Standard</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Target Exam</label>
+              <select id="reg-target" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                <option>UPSC Civil Services</option>
+                <option>SSC CGL / CHSL</option>
+                <option>Banking (IBPS & SBI PO)</option>
+                <option>Railways RRB NTPC</option>
+                <option>GATE & PSUs</option>
+                <option>Defence (CDS / NDA)</option>
+                <option>State PSC (MPSC)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md mt-2">
+            Confirm Free Registration & Get Pass
+          </button>
+        </form>
+      </div>
+
+      <!-- Confirmed Pass Card -->
+      <div id="reg-pass-container" class="hidden text-center space-y-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div>
+          <h4 class="font-extrabold text-slate-900 text-base">Pass Confirmed!</h4>
+          <p class="text-xs text-slate-500">Your registration has been confirmed. Save your pass details:</p>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4 text-left text-xs space-y-2">
+          <div class="flex justify-between border-b border-blue-200 pb-2">
+            <span class="font-bold text-blue-900 uppercase">Admission Pass</span>
+            <span class="font-mono font-bold bg-white px-2 py-0.5 rounded text-blue-700" id="pass-id">PASS-2026-9812</span>
+          </div>
+          <div class="font-bold text-slate-800" id="pass-session-title">Seminar Title</div>
+          <div class="grid grid-cols-2 gap-2 text-slate-600 text-[11px]">
+            <div>Attendee: <strong class="text-slate-800 block" id="pass-student-name">Aarav Sharma</strong></div>
+            <div>Date: <strong class="text-slate-800 block" id="pass-date">Oct 25, 2026</strong></div>
+          </div>
+        </div>
+        <button onclick="closeRegisterModal()" class="w-full py-2 bg-blue-600 text-white font-bold text-xs rounded-xl">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST FEEDBACK NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-4 flex items-center gap-2">
+    <span id="toast-message">Action successful!</span>
+  </div>
+
+  <script>
+    const INITIAL_EXAMS = [
+      { id: "upsc-cse", name: "UPSC Civil Services", fullName: "Union Public Service Commission - Civil Services Exam", category: "Civil Services", body: "UPSC", qualification: "Graduate", ageLimit: "21 to 32 Years", difficulty: "High", prepTime: "12 - 18 Months", prelimsDate: "May 24, 2026", isTentative: true, desc: "Premier nationwide examination for recruitment to IAS, IPS, IFS, and IRS central civil services.", syllabus: "Prelims: Paper 1 (General Studies) & Paper 2 (CSAT qualifying). Mains: 9 descriptive papers including Essay, 4 GS papers & 2 Optionals.", officialUrl: "https://upsc.gov.in" },
+      { id: "ssc-cgl", name: "SSC CGL", fullName: "Staff Selection Commission - Combined Graduate Level", category: "SSC", body: "Staff Selection Commission", qualification: "Graduate", ageLimit: "18 to 32 Years", difficulty: "Moderate to High", prepTime: "6 - 9 Months", prelimsDate: "September 2026", isTentative: true, desc: "Group B and C gazetted & non-gazetted officers across Central Ministries, Income Tax & Customs.", syllabus: "Tier-1 (100 Qs: Reasoning, GA, Quant, English). Tier-2 (Maths, Reasoning, English, General Awareness, Computer Module & Typing).", officialUrl: "https://ssc.gov.in" },
+      { id: "ibps-po", name: "IBPS PO", fullName: "Institute of Banking Personnel Selection - Probationary Officer", category: "Banking", body: "IBPS & 11 Public Sector Banks", qualification: "Graduate", ageLimit: "20 to 30 Years", difficulty: "Moderate", prepTime: "4 - 8 Months", prelimsDate: "October 2026", isTentative: true, desc: "Probationary officers and management trainees in leading public sector commercial banks in India.", syllabus: "Prelims: Quant, Reasoning, English. Mains: Advanced Data Analysis, Banking Awareness, Computer Aptitude, Letter/Essay writing.", officialUrl: "https://ibps.in" },
+      { id: "rrb-ntpc", name: "RRB NTPC", fullName: "Railway Recruitment Board - Non-Technical Popular Categories", category: "Railways", body: "Ministry of Railways", qualification: "12th / Graduate", ageLimit: "18 to 36 Years", difficulty: "Moderate", prepTime: "5 - 7 Months", prelimsDate: "December 2026", isTentative: true, desc: "Station Master, Goods Guard, Commercial Apprentice, Junior Accounts Assistant across Indian Railways.", syllabus: "CBT-1 (100 Qs: General Awareness 40, Maths 30, Reasoning 30). CBT-2 and Typing / Computer-based Aptitude Test.", officialUrl: "https://indianrailways.gov.in" },
+      { id: "gate", name: "GATE", fullName: "Graduate Aptitude Test in Engineering", category: "Engineering & GATE", body: "IISc & IITs", qualification: "Graduate (Engg)", ageLimit: "No upper limit", difficulty: "High", prepTime: "8 - 12 Months", prelimsDate: "February 2027", isTentative: false, desc: "Benchmark exam for Master's/Ph.D. admissions in IITs and direct appointment in Maharatna PSUs (IOCL, ONGC, NTPC, BHEL).", syllabus: "General Aptitude (15 marks) + Engineering Mathematics + Core Discipline Engineering topics (85 marks).", officialUrl: "https://gate.iitk.ac.in" },
+      { id: "defence-cds-nda", name: "Defence: CDS & NDA", fullName: "Combined Defence Services & National Defence Academy", category: "Defence", body: "UPSC & Services Selection Board (SSB)", qualification: "12th / Graduate", ageLimit: "16.5 - 24 Years", difficulty: "High (Written + SSB)", prepTime: "6 - 10 Months", prelimsDate: "April & Sept 2026", isTentative: false, desc: "Prestigious entry into Indian Army, Navy, and Air Force as commissioned officers with 5-day SSB interview.", syllabus: "English, General Knowledge, Elementary Mathematics followed by 5-day psychological and Group Testing Officer tasks.", officialUrl: "https://upsc.gov.in" },
+      { id: "mpsc-rajyaseva", name: "MPSC State Services", fullName: "Maharashtra Public Service Commission - Rajyaseva", category: "State PSC", body: "MPSC", qualification: "Graduate", ageLimit: "19 to 38 Years", difficulty: "High", prepTime: "10 - 14 Months", prelimsDate: "April 2026", isTentative: true, desc: "Deputy Collector, DySP, Tehsildar, and block development administrative posts in Maharashtra State.", syllabus: "Prelims (Paper 1 GS & Paper 2 CSAT). Mains descriptive pattern aligned with UPSC with Marathi/English compulsory papers.", officialUrl: "https://mpsc.gov.in" },
+      { id: "neet-jee", name: "JEE & NEET", fullName: "Joint Entrance Examination & National Eligibility cum Entrance Test", category: "Undergraduate", body: "National Testing Agency (NTA)", qualification: "12th Pass", ageLimit: "Min 17 Years", difficulty: "High", prepTime: "12 - 24 Months", prelimsDate: "Jan, Apr & May 2026", isTentative: true, desc: "National benchmark for admission into IITs, NITs (JEE) and AIIMS / Government Medical Colleges (NEET).", syllabus: "NCERT Class 11 and 12 core: Physics, Chemistry, Mathematics (JEE) or Biology (NEET).", officialUrl: "https://nta.ac.in" }
+    ];
+
+    const INITIAL_SEMINARS = [
+      { id: "sem-1", title: "How to Prepare for UPSC & State PSC 2026", topic: "Foundation Strategy, NCERT Note Making & Optional Selection", speaker: "Dr. Arvind Sharma, IAS (Retd.)", speakerRole: "Former Principal Secretary & Civil Services Mentor", date: "2026-10-25", time: "10:30 AM - 1:00 PM IST", mode: "Hybrid", venue: "Town Hall Main Auditorium, Shivaji Nagar, Pune & Live Stream", totalSeats: 250, registeredCount: 182, status: "upcoming" },
+      { id: "sem-2", title: "SSC CGL and Banking Exam Preparation Strategies", topic: "Speed Math Shortcuts, Reasoning Puzzles & Mock Analysis", speaker: "Neha Kulkarni", speakerRole: "SBI PO Top Ranker & Quant Educator", date: "2026-10-28", time: "5:00 PM - 7:00 PM IST", mode: "Online", venue: "Live Interactive Webinar (Zoom / YouTube Live)", totalSeats: 500, registeredCount: 412, status: "upcoming" },
+      { id: "sem-3", title: "Time Management & Daily Study Planning for Students", topic: "The 3+1 Study Formula & Overcoming Procrastination", speaker: "Prof. Rajesh Verma", speakerRole: "Cognitive Psychologist & Student Success Coach", date: "2026-11-02", time: "6:30 PM - 8:00 PM IST", mode: "Online", venue: "Google Meet Interactive Session", totalSeats: 300, registeredCount: 265, status: "upcoming" },
+      { id: "sem-4", title: "Career Guidance by Successful Defence Candidates", topic: "Cracking CDS, AFCAT & Mastering the 5-Day SSB Interview", speaker: "Capt. Vikram Rathore & Riya Sen", speakerRole: "Armed Forces Officers (CDS & AFCAT Qualified)", date: "2026-11-08", time: "2:00 PM - 5:00 PM IST", mode: "Offline", venue: "Sardar Patel Seminar Hall, University Campus, Pune", totalSeats: 150, registeredCount: 110, status: "upcoming" },
+      { id: "sem-5", title: "Competitive Exam Awareness for College Students", topic: "Starting from 1st and 2nd Year of Degree College", speaker: "Suhas Patil, MPSC Deputy Collector", speakerRole: "State Civil Services Rank 8", date: "2026-09-20", time: "10:00 AM - 1:00 PM IST", mode: "Offline", venue: "Dr. B.R. Ambedkar Auditorium, Pune", totalSeats: 300, registeredCount: 300, status: "completed", recordingUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+    ];
+
+    const INITIAL_TASKS = [
+      { id: "t1", title: "Revise Indian Constitution Fundamental Rights & DPSPs", subject: "Polity", duration: 90, priority: "High", completed: true },
+      { id: "t2", title: "Solve 25 Quantitative Aptitude Problems (Percentages & Profit)", subject: "Quant", duration: 60, priority: "High", completed: false },
+      { id: "t3", title: "Read The Hindu Editorial & make 5 bullet-point notes", subject: "Current Affairs", duration: 45, priority: "Medium", completed: false },
+      { id: "t4", title: "Banking Reasoning Mock Test 03 and mistake notebook update", subject: "Reasoning", duration: 75, priority: "Medium", completed: false }
+    ];
+
+    let state = {
+      currentRoute: 'home',
+      currentRole: 'student',
+      exams: INITIAL_EXAMS,
+      seminars: INITIAL_SEMINARS,
+      tasks: INITIAL_TASKS,
+      savedExams: ['upsc-cse', 'ssc-cgl'],
+      savedSeminars: ['sem-1'],
+      registrations: [
+        { id: "PASS-2026-1049", seminarId: "sem-1", studentName: "Aarav Sharma", studentEmail: "student@example.com" }
+      ],
+      notifications: [
+        { id: "n1", title: "UPSC Seminar Reminder", text: "Flagship session by Dr. Arvind Sharma on Oct 25. Pass confirmed.", date: "Today" },
+        { id: "n2", title: "SSC CGL 2026 Tentative Calendar", text: "Staff Selection Commission notification window begins June 2026.", date: "Yesterday" }
+      ],
+      activeSeminarForRegistration: null,
+      examFilterCategory: 'All',
+      examSearchQuery: '',
+      selectedExamDetails: null
+    };
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }, 3500);
+    }
+
+    function setRole(role) {
+      state.currentRole = role;
+      const btnStudent = document.getElementById('btn-role-student');
+      const btnAdmin = document.getElementById('btn-role-admin');
+      const navAdmin = document.getElementById('nav-admin');
+      const userDisplay = document.getElementById('user-display-name');
+
+      if (role === 'admin') {
+        btnAdmin.className = "px-2.5 py-1 rounded-md font-bold bg-purple-600 text-white shadow-xs transition";
+        btnStudent.className = "px-2.5 py-1 rounded-md font-bold text-slate-500 hover:text-slate-800 transition";
+        navAdmin.classList.remove('hidden');
+        userDisplay.textContent = "Admin Officer";
+        showToast("Switched to Administrator View!");
+        navigate('admin');
+      } else {
+        btnStudent.className = "px-2.5 py-1 rounded-md font-bold bg-white text-blue-700 shadow-xs transition";
+        btnAdmin.className = "px-2.5 py-1 rounded-md font-bold text-slate-500 hover:text-slate-800 transition";
+        navAdmin.classList.add('hidden');
+        userDisplay.textContent = "Aarav Sharma";
+        showToast("Switched to Student View!");
+        navigate('dashboard');
+      }
+    }
+
+    function navigate(route, param = null) {
+      state.currentRoute = route;
+      if (param) state.selectedExamDetails = param;
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-blue-600', 'bg-blue-50', 'bg-purple-600', 'text-white');
+        btn.classList.add('text-slate-600');
+      });
+      const activeNav = document.getElementById(`nav-${route}`);
+      if (activeNav) {
+        if (route === 'admin') {
+          activeNav.classList.add('bg-purple-600', 'text-white');
+        } else {
+          activeNav.classList.add('text-blue-600', 'bg-blue-50');
+        }
+      }
+
+      renderView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderView() {
+      const container = document.getElementById('app-view');
+      document.getElementById('badge-saved-count').textContent = state.savedExams.length + state.savedSeminars.length;
+      document.getElementById('badge-notif-count').textContent = state.notifications.length;
+
+      switch (state.currentRoute) {
+        case 'home': container.innerHTML = renderHomePage(); break;
+        case 'dashboard': container.innerHTML = renderDashboardPage(); break;
+        case 'exams': container.innerHTML = renderExamsPage(); break;
+        case 'exam-detail': container.innerHTML = renderExamDetailPage(); break;
+        case 'seminars': container.innerHTML = renderSeminarsPage(); break;
+        case 'strategies': container.innerHTML = renderStrategiesPage(); break;
+        case 'planner': container.innerHTML = renderPlannerPage(); break;
+        case 'saved': container.innerHTML = renderSavedPage(); break;
+        case 'notifications': container.innerHTML = renderNotificationsPage(); break;
+        case 'profile': container.innerHTML = renderProfilePage(); break;
+        case 'admin': container.innerHTML = renderAdminPage(); break;
+        default: container.innerHTML = renderHomePage();
+      }
+    }
+
+    function renderHomePage() {
+      return `
+        <div class="space-y-16">
+          <div class="text-center max-w-3xl mx-auto space-y-6 pt-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+              ★ National Student Awareness Initiative 2026
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Master Competitive Exams with <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Expert Guidance & Seminars</span>
+            </h1>
+            <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+              Join offline seminars and live online webinars conducted by former civil servants, rank holders, and educators. Clear UPSC, SSC, Banking, Railways, GATE, and Defence entrance exams.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button onclick="navigate('seminars')" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition">
+                Browse Guidance Seminars
+              </button>
+              <button onclick="navigate('exams')" class="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold text-xs transition">
+                Explore 8+ Exam Streams
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-white rounded-3xl border border-slate-200 text-center shadow-xs">
+            <div><span class="text-2xl sm:text-3xl font-extrabold text-blue-600">15,000+</span><span class="text-xs font-semibold text-slate-500 block mt-1">Students Mentored</span></div>
+            <div><span class="text-2xl sm:text-3xl font-extrabold text-indigo-600">8 Streams</span><span class="text-xs font-semibold text-slate-500 block mt-1">Central & State Exams</span></div>
+            <div><span class="text-2xl sm:text-3xl font-extrabold text-emerald-600">45+ Sessions</span><span class="text-xs font-semibold text-slate-500 block mt-1">Seminars & Webinars</span></div>
+            <div><span class="text-2xl sm:text-3xl font-extrabold text-purple-600">100% Free</span><span class="text-xs font-semibold text-slate-500 block mt-1">College Guidance</span></div>
+          </div>
+
+          <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div class="space-y-3 max-w-2xl">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-300 bg-blue-500/20 px-2.5 py-0.5 rounded-full border border-blue-400/30">Flagship Upcoming Seminar</span>
+              <h2 class="text-2xl font-extrabold text-white">How to Prepare for UPSC & State PSC 2026</h2>
+              <p class="text-xs text-blue-100 leading-relaxed">An intensive offline and online masterclass by Dr. Arvind Sharma, IAS (Retd.), detailing how to balance college lectures with civil services syllabus, NCERT notes, and optional selection.</p>
+              <div class="flex flex-wrap items-center gap-3 text-xs text-blue-200 pt-1">
+                <span>📅 Oct 25, 2026</span><span>•</span><span>⏰ 10:30 AM IST</span><span>•</span><span>📍 Town Hall Auditorium, Pune</span>
+              </div>
+            </div>
+            <div class="bg-white/10 p-5 rounded-2xl border border-white/20 text-center w-full lg:w-64 shrink-0 space-y-3">
+              <span class="text-xs text-blue-200 block uppercase font-bold">Seats Left</span>
+              <span class="text-3xl font-extrabold text-white block">68 / 250</span>
+              <button onclick="openRegisterModal('sem-1', 'How to Prepare for UPSC & State PSC 2026')" class="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-bold text-xs shadow-md transition">Reserve Free Pass</button>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div><h3 class="text-xl font-extrabold text-slate-900">Popular Competitive Examinations</h3><p class="text-xs text-slate-500">Official syllabus and eligibility criteria</p></div>
+              <button onclick="navigate('exams')" class="text-xs font-bold text-blue-600 hover:underline">View All →</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              ${state.exams.slice(0, 4).map(e => `
+                <div onclick="navigate('exam-detail', '${e.id}')" class="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md cursor-pointer transition flex flex-col justify-between">
+                  <div class="space-y-2">
+                    <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md uppercase">${e.category}</span>
+                    <h4 class="font-bold text-slate-900 text-base leading-snug">${e.name}</h4>
+                    <p class="text-xs text-slate-500 line-clamp-2">${e.desc}</p>
+                  </div>
+                  <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-blue-600 font-bold mt-3">
+                    <span>${e.qualification}</span><span>View Syllabus →</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDashboardPage() {
+      const completed = state.tasks.filter(t => t.completed).length;
+      const progress = Math.round((completed / state.tasks.length) * 100) || 0;
+      return `
+        <div class="space-y-8">
+          <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <span class="text-xs uppercase font-bold text-blue-200 bg-white/10 px-2.5 py-0.5 rounded-full">Aspirant Dashboard</span>
+              <h2 class="text-2xl font-extrabold text-white">Welcome back, Aarav Sharma! 👋</h2>
+              <p class="text-xs text-blue-100">Targeting: <strong>UPSC Civil Services & SSC CGL</strong> • Daily Study Goal: 4 Hours</p>
+            </div>
+            <button onclick="navigate('planner')" class="px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white rounded-xl text-xs font-bold transition">Open Study Planner</button>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div onclick="navigate('saved')" class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-blue-300">
+              <span class="text-xs text-slate-400 font-bold uppercase block">Saved Exams</span>
+              <span class="text-3xl font-extrabold text-slate-900 mt-1 block">${state.savedExams.length}</span>
+              <span class="text-[11px] text-slate-400">Bookmarked for tracking</span>
+            </div>
+            <div onclick="navigate('saved')" class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-blue-300">
+              <span class="text-xs text-slate-400 font-bold uppercase block">Registered Sessions</span>
+              <span class="text-3xl font-extrabold text-slate-900 mt-1 block">${state.registrations.length}</span>
+              <span class="text-[11px] text-slate-400">Confirmed seminar passes</span>
+            </div>
+            <div onclick="navigate('planner')" class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-blue-300">
+              <span class="text-xs text-slate-400 font-bold uppercase block">Today's Tasks</span>
+              <span class="text-3xl font-extrabold text-slate-900 mt-1 block">${completed} / ${state.tasks.length}</span>
+              <span class="text-[11px] text-slate-400">${progress}% completed today</span>
+            </div>
+            <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs text-slate-400 font-bold uppercase block">Study Streak</span>
+              <span class="text-3xl font-extrabold text-amber-500 mt-1 block">5 Days 🔥</span>
+              <span class="text-[11px] text-slate-400">Consistent daily revisions</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-blue-200 rounded-3xl p-6 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-blue-800 uppercase tracking-wider">Your Next Guidance Seminar</span>
+              <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Pass Confirmed</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">How to Prepare for UPSC & State PSC 2026</h3>
+            <p class="text-xs text-slate-600">Speaker: Dr. Arvind Sharma, IAS (Retd.) • Oct 25, 2026 • 10:30 AM</p>
+            <div class="flex items-center gap-2 pt-2">
+              <button onclick="navigate('seminars')" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-xs">View Schedule & Details</button>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+              <div><h3 class="font-bold text-slate-900 text-base">Today's Study Checklist</h3><p class="text-xs text-slate-400">Click checkboxes to mark tasks as completed</p></div>
+              <button onclick="navigate('planner')" class="text-xs font-bold text-blue-600 hover:underline">Manage Planner →</button>
+            </div>
+            <div class="space-y-2">
+              ${state.tasks.map(t => `
+                <div class="flex items-center justify-between p-3 rounded-xl border ${t.completed ? 'bg-slate-50 border-slate-200 opacity-60' : 'bg-white border-slate-200'}">
+                  <div class="flex items-center gap-3">
+                    <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-4 h-4 text-blue-600 rounded">
+                    <div>
+                      <span class="text-xs font-semibold ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}">${t.title}</span>
+                      <span class="block text-[10px] text-slate-400">${t.subject} • ${t.duration} mins</span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] font-bold ${t.priority === 'High' ? 'text-rose-600 bg-rose-50' : 'text-amber-600 bg-amber-50'} px-2 py-0.5 rounded">${t.priority}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamsPage() {
+      const categories = ['All', 'Civil Services', 'SSC', 'Banking', 'Railways', 'Engineering & GATE', 'Defence', 'State PSC'];
+      const filtered = state.exams.filter(e => {
+        const matchesCat = state.examFilterCategory === 'All' || e.category === state.examFilterCategory;
+        const q = state.examSearchQuery.toLowerCase();
+        const matchesQ = !q || e.name.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q);
+        return matchesCat && matchesQ;
+      });
+
+      return `
+        <div class="space-y-6">
+          <div class="text-center max-w-xl mx-auto space-y-2">
+            <h2 class="text-3xl font-extrabold text-slate-900">Competitive Examinations Directory</h2>
+            <p class="text-xs text-slate-500">Official syllabus, eligibility criteria, and verified tentative dates</p>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+            <input type="text" value="${state.examSearchQuery}" oninput="state.examSearchQuery = this.value; renderView()" placeholder="Search exams by name, post, or syllabus keyword..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+              ${categories.map(cat => `
+                <button onclick="state.examFilterCategory = '${cat}'; renderView()" class="px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition ${state.examFilterCategory === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                  ${cat}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${filtered.map(e => `
+              <div onclick="navigate('exam-detail', '${e.id}')" class="bg-white p-6 rounded-3xl border border-slate-200 hover:border-blue-300 hover:shadow-lg cursor-pointer transition flex flex-col justify-between">
+                <div class="space-y-3">
+                  <div class="flex justify-between items-start">
+                    <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md uppercase">${e.category}</span>
+                    <button onclick="event.stopPropagation(); toggleSaveExam('${e.id}')" class="text-slate-400 hover:text-blue-600">
+                      ${state.savedExams.includes(e.id) ? '★' : '☆'}
+                    </button>
+                  </div>
+                  <h3 class="text-lg font-bold text-slate-900">${e.name}</h3>
+                  <p class="text-xs text-slate-500 leading-relaxed">${e.desc}</p>
+                  <div class="bg-slate-50 p-3 rounded-xl text-xs space-y-1">
+                    <div class="flex justify-between"><span class="text-slate-400">Eligibility:</span> <strong class="text-slate-700">${e.qualification}</strong></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Next Prelims:</span> <strong class="text-blue-700">${e.prelimsDate}</strong></div>
+                  </div>
+                </div>
+                <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-400">${e.difficulty} Difficulty</span>
+                  <span class="font-bold text-blue-600">Full Details →</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamDetailPage() {
+      const exam = state.exams.find(e => e.id === state.selectedExamDetails) || state.exams[0];
+      const isSaved = state.savedExams.includes(exam.id);
+
+      return `
+        <div class="max-w-4xl mx-auto space-y-6">
+          <button onclick="navigate('exams')" class="text-xs font-bold text-slate-500 hover:text-slate-800">← Back to Exams Directory</button>
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full uppercase">${exam.category}</span>
+                <h1 class="text-2xl font-extrabold text-slate-900 mt-1">${exam.name}</h1>
+                <p class="text-xs text-slate-500">${exam.fullName} • Conducted by ${exam.body}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="toggleSaveExam('${exam.id}')" class="px-4 py-2 border border-slate-200 text-xs font-bold rounded-xl hover:bg-slate-50">${isSaved ? '★ Saved' : '☆ Bookmark'}</button>
+                <a href="${exam.officialUrl}" target="_blank" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-xs">Official Portal ↗</a>
+              </div>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-4">${exam.desc}</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl text-xs">
+              <div><span class="text-slate-400 text-[10px] uppercase font-bold block">Qualification</span><strong class="text-slate-800">${exam.qualification}</strong></div>
+              <div><span class="text-slate-400 text-[10px] uppercase font-bold block">Age Limit</span><strong class="text-slate-800">${exam.ageLimit}</strong></div>
+              <div><span class="text-slate-400 text-[10px] uppercase font-bold block">Prep Time</span><strong class="text-slate-800">${exam.prepTime}</strong></div>
+              <div><span class="text-slate-400 text-[10px] uppercase font-bold block">Next Prelims</span><strong class="text-blue-700">${exam.prelimsDate}</strong></div>
+            </div>
+            <div class="space-y-4">
+              <h3 class="font-bold text-slate-900 text-sm">Official Syllabus Breakdown</h3>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 leading-relaxed">${exam.syllabus}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSeminarsPage() {
+      return `
+        <div class="space-y-6">
+          <div class="text-center max-w-xl mx-auto space-y-2">
+            <h2 class="text-3xl font-extrabold text-slate-900">Seminars & Guidance Sessions</h2>
+            <p class="text-xs text-slate-500">Free offline auditorium seminars and live interactive webinars with top rankers</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${state.seminars.map(s => {
+              const isRegistered = state.registrations.some(r => r.seminarId === s.id);
+              const seatsLeft = s.totalSeats - s.registeredCount;
+              const percent = Math.round((s.registeredCount / s.totalSeats) * 100);
+
+              return `
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition flex flex-col justify-between">
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                      <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full uppercase">${s.mode} Session</span>
+                      <span class="text-[10px] font-bold ${s.status === 'completed' ? 'text-slate-400 bg-slate-100' : 'text-emerald-700 bg-emerald-50'} px-2 py-0.5 rounded-full">${s.status === 'completed' ? 'Completed' : 'Upcoming'}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 leading-snug">${s.title}</h3>
+                    <p class="text-xs text-blue-700 font-semibold">${s.topic}</p>
+                    <div class="bg-slate-50 p-3 rounded-2xl text-xs space-y-1">
+                      <div class="font-bold text-slate-800">${s.speaker}</div>
+                      <div class="text-[11px] text-slate-500">${s.speakerRole}</div>
+                      <div class="text-slate-600 pt-1">📅 ${s.date} • ⏰ ${s.time}</div>
+                      <div class="text-slate-500 text-[11px] truncate">📍 ${s.venue}</div>
+                    </div>
+                    ${s.status !== 'completed' ? `
+                      <div class="space-y-1 pt-1">
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                          <span>Seats Reserved: ${s.registeredCount} / ${s.totalSeats}</span>
+                          <strong class="text-slate-700">${seatsLeft} left</strong>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <div class="bg-blue-600 h-full rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                  <div class="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between">
+                    ${s.status === 'completed' ? `
+                      <a href="${s.recordingUrl}" target="_blank" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl text-center">Watch Recording ↗</a>
+                    ` : isRegistered ? `
+                      <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl w-full text-center">✓ Pass Confirmed</span>
+                    ` : `
+                      <button onclick="openRegisterModal('${s.id}', '${s.title}')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">Register Free</button>
+                    `}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStrategiesPage() {
+      return `
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div class="text-center space-y-2">
+            <h2 class="text-3xl font-extrabold text-slate-900">Preparation Strategies & Blueprints</h2>
+            <p class="text-xs text-slate-500">Proven routines formulated by successful candidates and educators</p>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+              <h3 class="font-bold text-slate-900 text-base flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">1</span>The 3+1 Daily Routine for Degree College Students</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Undergraduates can easily crack UPSC or Banking exams without sacrificing academics. Spend <strong>3 hours</strong> on core syllabus theory & PYQs, and <strong>1 hour</strong> on daily newspaper analysis. This yields over 1,400 hours of quality preparation in a single year.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+              <h3 class="font-bold text-slate-900 text-base flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">2</span>The 1:2 Ratio for Mock Tests</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">For every 1 hour spent writing a mock exam, spend 2 full hours analyzing errors. Maintain a dedicated <em>Mistake Notebook</em> categorized into: Conceptual Lack, Calculation Blunder, or Misreading the Question.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+              <h3 class="font-bold text-slate-900 text-base flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold">3</span>Spaced Repetition Protocol (1-3-7-30 Rule)</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Defeat the forgetting curve by revising on Day 1 (15m review), Day 3 (solving 10 questions), Day 7 (explaining out loud), and Day 30 (quick flashcard glance).</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlannerPage() {
+      const completedCount = state.tasks.filter(t => t.completed).length;
+      const progress = Math.round((completedCount / state.tasks.length) * 100) || 0;
+      return `
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div class="flex items-center justify-between">
+            <div><h2 class="text-2xl font-extrabold text-slate-900">Daily Study Planner</h2><p class="text-xs text-slate-500">Track subjects, study duration, and daily revision consistency</p></div>
+            <button onclick="promptAddTask()" class="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl shadow-xs">+ Add Task</button>
+          </div>
+          <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-3xl space-y-2">
+            <div class="flex justify-between text-xs"><span>Goal Consistency</span><span>${completedCount} of ${state.tasks.length} Completed (${progress}%)</span></div>
+            <div class="w-full bg-blue-950 rounded-full h-2.5 overflow-hidden"><div class="bg-emerald-400 h-full rounded-full transition-all duration-300" style="width: ${progress}%"></div></div>
+          </div>
+          <div class="space-y-2.5">
+            ${state.tasks.map(t => `
+              <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-4 h-4 text-blue-600 rounded">
+                  <div><h4 class="text-xs font-bold ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}">${t.title}</h4><span class="text-[11px] text-slate-400">${t.subject} • ${t.duration} mins</span></div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded ${t.priority === 'High' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'}">${t.priority}</span>
+                  <button onclick="deleteTask('${t.id}')" class="text-slate-400 hover:text-rose-600 p-1 text-xs">✕</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSavedPage() {
+      const savedExams = state.exams.filter(e => state.savedExams.includes(e.id));
+      const savedSeminars = state.seminars.filter(s => state.savedSeminars.includes(s.id));
+      return `
+        <div class="max-w-4xl mx-auto space-y-6">
+          <h2 class="text-2xl font-extrabold text-slate-900">Saved Items & Bookmarks</h2>
+          <div class="space-y-4">
+            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Bookmarked Examinations (${savedExams.length})</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              ${savedExams.map(e => `
+                <div class="p-4 bg-white rounded-2xl border border-slate-200 flex justify-between items-start">
+                  <div><span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">${e.category}</span><h4 class="font-bold text-slate-900 text-sm mt-1">${e.name}</h4><p class="text-xs text-slate-500 mt-0.5">Prelims: ${e.prelimsDate}</p></div>
+                  <button onclick="toggleSaveExam('${e.id}')" class="text-xs text-rose-600 font-bold hover:underline">Remove</button>
+                </div>
+              `).join('')}
+            </div>
+            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider pt-4">Saved Guidance Sessions (${savedSeminars.length})</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              ${savedSeminars.map(s => `
+                <div class="p-4 bg-white rounded-2xl border border-slate-200 flex justify-between items-start">
+                  <div><span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${s.mode}</span><h4 class="font-bold text-slate-900 text-sm mt-1">${s.title}</h4><p class="text-xs text-slate-500 mt-0.5">${s.date} • Speaker: ${s.speaker}</p></div>
+                  <button onclick="navigate('seminars')" class="text-xs text-blue-600 font-bold hover:underline">View</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNotificationsPage() {
+      return `
+        <div class="max-w-3xl mx-auto space-y-6">
+          <div class="flex items-center justify-between">
+            <div><h2 class="text-2xl font-extrabold text-slate-900">Notification Center</h2><p class="text-xs text-slate-500">Live seminar reminders and verified exam deadline notices</p></div>
+            <button onclick="state.notifications = []; renderView(); showToast('Alerts cleared!')" class="text-xs text-blue-600 font-bold hover:underline">Clear All</button>
+          </div>
+          <div class="p-4 bg-white rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
+            <div><strong>Web & Browser Push Alerts:</strong><span class="text-emerald-700 font-bold ml-1">● Enabled</span></div>
+            <button onclick="showToast('Test alert: Seminar starting in 30 mins!')" class="text-blue-600 font-bold hover:underline">Send Test Alert</button>
+          </div>
+          <div class="space-y-3">
+            ${state.notifications.map(n => `
+              <div class="p-4 bg-white rounded-2xl border border-slate-200 flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2"><h4 class="font-bold text-slate-900 text-xs">${n.title}</h4><span class="text-[10px] text-slate-400">• ${n.date}</span></div>
+                  <p class="text-xs text-slate-600">${n.text}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProfilePage() {
+      return `
+        <div class="max-w-3xl mx-auto space-y-6">
+          <h2 class="text-2xl font-extrabold text-slate-900">Aspirant Profile & Goals</h2>
+          <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-4 text-xs">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-4">
+              <div class="w-16 h-16 rounded-2xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center">AS</div>
+              <div><h3 class="text-base font-bold text-slate-900">Aarav Sharma</h3><p class="text-slate-500">student@example.com • Final Year B.Tech</p><span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">Student Aspirant</span></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="font-bold text-slate-600 block mb-1">Education Level</label><input type="text" value="Undergraduate (Final Year)" disabled class="w-full p-2 rounded-xl border border-slate-200 bg-slate-50"></div>
+              <div><label class="font-bold text-slate-600 block mb-1">Daily Study Target</label><input type="text" value="4 Hours / Day" disabled class="w-full p-2 rounded-xl border border-slate-200 bg-slate-50"></div>
+            </div>
+            <div class="pt-2"><label class="font-bold text-slate-600 block mb-1">Target Examinations</label><div class="flex flex-wrap gap-2"><span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold border border-blue-200">✓ UPSC Civil Services</span><span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold border border-blue-200">✓ SSC CGL</span></div></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminPage() {
+      return `
+        <div class="space-y-6">
+          <div class="bg-gradient-to-r from-purple-900 to-indigo-900 text-white p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs uppercase font-bold text-purple-200 bg-purple-500/20 px-2 py-0.5 rounded-full">Administrator Console</span>
+              <h2 class="text-2xl font-extrabold text-white mt-1">Management & Attendee Control</h2>
+              <p class="text-xs text-purple-200">Publish seminars, update syllabi, and view registered student rosters</p>
+            </div>
+            <button onclick="resetData()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl border border-white/20">Reset Sample Data</button>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 text-center"><span class="text-2xl font-extrabold text-slate-900 block">${state.seminars.length}</span><span class="text-xs text-slate-500">Seminars Published</span></div>
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 text-center"><span class="text-2xl font-extrabold text-slate-900 block">${state.exams.length}</span><span class="text-xs text-slate-500">Exam Entries</span></div>
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 text-center"><span class="text-2xl font-extrabold text-slate-900 block">${state.registrations.length}</span><span class="text-xs text-slate-500">Student Bookings</span></div>
+          </div>
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between"><h3 class="font-bold text-slate-900 text-base">Attendee Roster (Student Passes)</h3><span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full">${state.registrations.length} Confirmed</span></div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-100">
+                  <tr><th class="p-2.5">Pass ID</th><th class="p-2.5">Student Name</th><th class="p-2.5">Email</th><th class="p-2.5">Session ID</th><th class="p-2.5">Status</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${state.registrations.map(r => `
+                    <tr>
+                      <td class="p-2.5 font-mono font-bold text-purple-700">${r.id}</td>
+                      <td class="p-2.5 font-bold text-slate-800">${r.studentName}</td>
+                      <td class="p-2.5 text-slate-500">${r.studentEmail}</td>
+                      <td class="p-2.5 text-slate-600">${r.seminarId}</td>
+                      <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">Confirmed</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function openRegisterModal(seminarId, title) {
+      state.activeSeminarForRegistration = seminarId;
+      document.getElementById('reg-modal-title').textContent = title;
+      document.getElementById('reg-form-container').classList.remove('hidden');
+      document.getElementById('reg-pass-container').classList.add('hidden');
+      document.getElementById('modal-register').classList.remove('hidden');
+      document.getElementById('modal-register').classList.add('flex');
+    }
+
+    function closeRegisterModal() {
+      document.getElementById('modal-register').classList.add('hidden');
+      document.getElementById('modal-register').classList.remove('flex');
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const semId = state.activeSeminarForRegistration;
+      const sem = state.seminars.find(s => s.id === semId);
+      const studentName = document.getElementById('reg-name').value;
+      const studentEmail = document.getElementById('reg-email').value;
+
+      const exists = state.registrations.some(r => r.seminarId === semId && r.studentEmail === studentEmail);
+      if (exists) {
+        alert("You have already registered for this session with this email address!");
+        return;
+      }
+
+      if (sem) {
+        sem.registeredCount++;
+      }
+
+      const passId = "PASS-" + Math.floor(1000 + Math.random() * 9000);
+      state.registrations.push({ id: passId, seminarId: semId, studentName, studentEmail });
+
+      document.getElementById('pass-id').textContent = passId;
+      document.getElementById('pass-session-title').textContent = sem ? sem.title : "Guidance Seminar";
+      document.getElementById('pass-student-name').textContent = studentName;
+      document.getElementById('pass-date').textContent = sem ? sem.date : "Scheduled Date";
+
+      document.getElementById('reg-form-container').classList.add('hidden');
+      document.getElementById('reg-pass-container').classList.remove('hidden');
+      showToast("Registration Confirmed! Pass Generated.");
+      renderView();
+    }
+
+    function toggleTask(id) {
+      const task = state.tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        renderView();
+        showToast(task.completed ? "Task completed! 🎯" : "Task marked incomplete");
+      }
+    }
+
+    function deleteTask(id) {
+      state.tasks = state.tasks.filter(t => t.id !== id);
+      renderView();
+      showToast("Task deleted.");
+    }
+
+    function promptAddTask() {
+      const title = prompt("Enter study task description (e.g. Read NCERT chapter 3):");
+      if (title) {
+        state.tasks.push({ id: "t-" + Date.now(), title, subject: "General Studies", duration: 60, priority: "High", completed: false });
+        renderView();
+        showToast("New task added!");
+      }
+    }
+
+    function toggleSaveExam(id) {
+      if (state.savedExams.includes(id)) {
+        state.savedExams = state.savedExams.filter(x => x !== id);
+        showToast("Removed from saved exams");
+      } else {
+        state.savedExams.push(id);
+        showToast("Exam saved to bookmarks!");
+      }
+      renderView();
+    }
+
+    function resetData() {
+      state.exams = [...INITIAL_EXAMS];
+      state.seminars = [...INITIAL_SEMINARS];
+      state.tasks = [...INITIAL_TASKS];
+      showToast("Sample data reset successfully!");
+      renderView();
+    }
+
+    renderView();
+  </script>
+</body>
+</html>
