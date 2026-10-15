@@ -56,29 +56,34 @@
         </nav>
 
         <!-- Right Quick Controls -->
-        <div class="flex items-center gap-2">
-          <!-- Role Switcher -->
-          <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
-            <button onclick="setRole('student')" id="btn-role-student" class="px-2.5 py-1 rounded-md font-bold bg-white text-blue-700 shadow-xs transition">Student</button>
-            <button onclick="setRole('admin')" id="btn-role-admin" class="px-2.5 py-1 rounded-md font-bold text-slate-500 hover:text-slate-800 transition">Admin</button>
-          </div>
-
-          <!-- Saved Items Icon -->
-          <button onclick="navigate('saved')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="Saved Items">
+        <div class="flex items-center gap-2" id="nav-right-controls">
+          <!-- Saved Items Icon (hidden when logged out) -->
+          <button onclick="navigate('saved')" id="btn-nav-saved" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition hidden" title="Saved Items">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-            <span id="badge-saved-count" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+            <span id="badge-saved-count" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">0</span>
           </button>
 
-          <!-- Notifications Icon -->
-          <button onclick="navigate('notifications')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="Alerts">
+          <!-- Notifications Icon (hidden when logged out) -->
+          <button onclick="navigate('notifications')" id="btn-nav-notif" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition hidden" title="Alerts">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            <span id="badge-notif-count" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">2</span>
+            <span id="badge-notif-count" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">0</span>
           </button>
 
-          <!-- Profile -->
-          <button onclick="navigate('profile')" class="p-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">AS</div>
-            <span class="text-xs font-bold text-slate-800 hidden sm:inline" id="user-display-name">Aarav Sharma</span>
+          <!-- Profile button (shown when logged in) -->
+          <button onclick="navigate('profile')" id="btn-nav-profile" class="p-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition items-center gap-2 hidden">
+            <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs" id="user-avatar-initials">??</div>
+            <span class="text-xs font-bold text-slate-800 hidden sm:inline" id="user-display-name">Student</span>
+          </button>
+
+          <!-- Logout button (shown when logged in) -->
+          <button onclick="logoutUser()" id="btn-nav-logout" class="hidden px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 text-xs font-bold transition flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Logout
+          </button>
+
+          <!-- Login button (shown when logged out) -->
+          <button onclick="navigate('login')" id="btn-nav-login" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm">
+            Login / Register
           </button>
         </div>
 
@@ -262,6 +267,7 @@
     let state = {
       currentRoute: 'home',
       currentRole: 'student',
+      currentUser: null,   // { name, email, role: 'student'|'admin', initials }
       exams: INITIAL_EXAMS,
       seminars: INITIAL_SEMINARS,
       tasks: INITIAL_TASKS,
@@ -292,27 +298,37 @@
       }, 3500);
     }
 
-    function setRole(role) {
-      state.currentRole = role;
-      const btnStudent = document.getElementById('btn-role-student');
-      const btnAdmin = document.getElementById('btn-role-admin');
-      const navAdmin = document.getElementById('nav-admin');
-      const userDisplay = document.getElementById('user-display-name');
+    function updateNavbar() {
+      const user = state.currentUser;
+      const loginBtn   = document.getElementById('btn-nav-login');
+      const logoutBtn  = document.getElementById('btn-nav-logout');
+      const profileBtn = document.getElementById('btn-nav-profile');
+      const savedBtn   = document.getElementById('btn-nav-saved');
+      const notifBtn   = document.getElementById('btn-nav-notif');
+      const navAdmin   = document.getElementById('nav-admin');
+      const avatarEl   = document.getElementById('user-avatar-initials');
+      const nameEl     = document.getElementById('user-display-name');
 
-      if (role === 'admin') {
-        btnAdmin.className = "px-2.5 py-1 rounded-md font-bold bg-purple-600 text-white shadow-xs transition";
-        btnStudent.className = "px-2.5 py-1 rounded-md font-bold text-slate-500 hover:text-slate-800 transition";
-        navAdmin.classList.remove('hidden');
-        userDisplay.textContent = "Admin Officer";
-        showToast("Switched to Administrator View!");
-        navigate('admin');
+      if (user) {
+        loginBtn && loginBtn.classList.add('hidden');
+        logoutBtn && logoutBtn.classList.remove('hidden');
+        profileBtn && profileBtn.classList.remove('hidden');
+        profileBtn && profileBtn.classList.add('flex');
+        savedBtn && savedBtn.classList.remove('hidden');
+        notifBtn && notifBtn.classList.remove('hidden');
+        if (avatarEl) avatarEl.textContent = user.initials || '??';
+        if (nameEl) nameEl.textContent = user.name;
+        if (navAdmin) {
+          user.role === 'admin' ? navAdmin.classList.remove('hidden') : navAdmin.classList.add('hidden');
+        }
       } else {
-        btnStudent.className = "px-2.5 py-1 rounded-md font-bold bg-white text-blue-700 shadow-xs transition";
-        btnAdmin.className = "px-2.5 py-1 rounded-md font-bold text-slate-500 hover:text-slate-800 transition";
-        navAdmin.classList.add('hidden');
-        userDisplay.textContent = "Aarav Sharma";
-        showToast("Switched to Student View!");
-        navigate('dashboard');
+        loginBtn && loginBtn.classList.remove('hidden');
+        logoutBtn && logoutBtn.classList.add('hidden');
+        profileBtn && profileBtn.classList.add('hidden');
+        profileBtn && profileBtn.classList.remove('flex');
+        savedBtn && savedBtn.classList.add('hidden');
+        notifBtn && notifBtn.classList.add('hidden');
+        if (navAdmin) navAdmin.classList.add('hidden');
       }
     }
 
@@ -339,21 +355,38 @@
 
     function renderView() {
       const container = document.getElementById('app-view');
-      document.getElementById('badge-saved-count').textContent = state.savedExams.length + state.savedSeminars.length;
-      document.getElementById('badge-notif-count').textContent = state.notifications.length;
+      const savedEl = document.getElementById('badge-saved-count');
+      const notifEl = document.getElementById('badge-notif-count');
+      if (savedEl) savedEl.textContent = state.savedExams.length + state.savedSeminars.length;
+      if (notifEl) notifEl.textContent = state.notifications.length;
+      updateNavbar();
 
       switch (state.currentRoute) {
         case 'home': container.innerHTML = renderHomePage(); break;
-        case 'dashboard': container.innerHTML = renderDashboardPage(); break;
+        case 'login': container.innerHTML = renderLoginPage(); break;
+        case 'register': container.innerHTML = renderRegisterPage(); break;
+        case 'dashboard':
+          if (!state.currentUser) { navigate('login'); return; }
+          container.innerHTML = renderDashboardPage(); break;
         case 'exams': container.innerHTML = renderExamsPage(); break;
         case 'exam-detail': container.innerHTML = renderExamDetailPage(); break;
         case 'seminars': container.innerHTML = renderSeminarsPage(); break;
         case 'strategies': container.innerHTML = renderStrategiesPage(); break;
-        case 'planner': container.innerHTML = renderPlannerPage(); break;
-        case 'saved': container.innerHTML = renderSavedPage(); break;
-        case 'notifications': container.innerHTML = renderNotificationsPage(); break;
-        case 'profile': container.innerHTML = renderProfilePage(); break;
-        case 'admin': container.innerHTML = renderAdminPage(); break;
+        case 'planner':
+          if (!state.currentUser) { navigate('login'); return; }
+          container.innerHTML = renderPlannerPage(); break;
+        case 'saved':
+          if (!state.currentUser) { navigate('login'); return; }
+          container.innerHTML = renderSavedPage(); break;
+        case 'notifications':
+          if (!state.currentUser) { navigate('login'); return; }
+          container.innerHTML = renderNotificationsPage(); break;
+        case 'profile':
+          if (!state.currentUser) { navigate('login'); return; }
+          container.innerHTML = renderProfilePage(); break;
+        case 'admin':
+          if (!state.currentUser || state.currentUser.role !== 'admin') { navigate('login'); return; }
+          container.innerHTML = renderAdminPage(); break;
         default: container.innerHTML = renderHomePage();
       }
     }
@@ -906,6 +939,347 @@
       showToast("Sample data reset successfully!");
       renderView();
     }
+
+
+    /* ─────────────────────────────────────────────────────────
+       AUTH SYSTEM  (localStorage-based, no backend needed)
+    ───────────────────────────────────────────────────────── */
+    const ADMIN_CREDENTIALS = [
+      { email: 'admin@examawareness.in', password: 'Admin@2026', name: 'Admin Officer', role: 'admin' },
+      { email: 'coordinator@examawareness.in', password: 'Coord@2026', name: 'Dr. Arvind Sharma', role: 'admin' }
+    ];
+
+    function getRegisteredUsers() {
+      try { return JSON.parse(localStorage.getItem('cea_users') || '[]'); } catch { return []; }
+    }
+    function saveRegisteredUsers(users) {
+      localStorage.setItem('cea_users', JSON.stringify(users));
+    }
+    function saveSessionUser(user) {
+      localStorage.setItem('cea_session', JSON.stringify(user));
+    }
+    function loadSessionUser() {
+      try { return JSON.parse(localStorage.getItem('cea_session')); } catch { return null; }
+    }
+    function clearSession() {
+      localStorage.removeItem('cea_session');
+    }
+
+    function getInitials(name) {
+      return name.trim().split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function loginUser(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('login-email');
+      const passInput  = document.getElementById('login-password');
+      const roleInput  = document.getElementById('login-role');
+      const errEl      = document.getElementById('login-error');
+      const email    = emailInput.value.trim().toLowerCase();
+      const password = passInput.value;
+      const role     = roleInput.value;
+
+      errEl.textContent = '';
+
+      if (role === 'admin') {
+        const match = ADMIN_CREDENTIALS.find(a => a.email === email && a.password === password);
+        if (!match) { errEl.textContent = 'Invalid admin credentials. Check email and password.'; return; }
+        state.currentUser = { name: match.name, email: match.email, role: 'admin', initials: getInitials(match.name) };
+      } else {
+        const users = getRegisteredUsers();
+        const match = users.find(u => u.email === email && u.password === password);
+        if (!match) { errEl.textContent = 'No account found with this email and password. Please register first.'; return; }
+        state.currentUser = { name: match.name, email: match.email, role: 'student', initials: getInitials(match.name), education: match.education, targetExam: match.targetExam, phone: match.phone };
+      }
+
+      saveSessionUser(state.currentUser);
+      showToast(`Welcome back, ${state.currentUser.name}! 🎉`);
+      navigate(state.currentUser.role === 'admin' ? 'admin' : 'dashboard');
+    }
+
+    function logoutUser() {
+      state.currentUser = null;
+      clearSession();
+      showToast('Logged out successfully. See you soon!');
+      navigate('home');
+    }
+
+    function registerStudent(event) {
+      event.preventDefault();
+      const name      = document.getElementById('reg-full-name').value.trim();
+      const email     = document.getElementById('reg-email-new').value.trim().toLowerCase();
+      const phone     = document.getElementById('reg-phone-new').value.trim();
+      const education = document.getElementById('reg-edu-new').value;
+      const target    = document.getElementById('reg-target-new').value;
+      const password  = document.getElementById('reg-password-new').value;
+      const confirm   = document.getElementById('reg-confirm-new').value;
+      const errEl     = document.getElementById('register-error');
+
+      errEl.textContent = '';
+
+      if (!name || name.length < 2)       { errEl.textContent = 'Please enter your full name (min 2 chars).'; return; }
+      if (!email.includes('@'))            { errEl.textContent = 'Please enter a valid email address.'; return; }
+      if (password.length < 6)            { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+      if (password !== confirm)           { errEl.textContent = 'Passwords do not match.'; return; }
+
+      const users = getRegisteredUsers();
+      if (users.find(u => u.email === email)) {
+        errEl.textContent = 'An account with this email already exists. Please login.'; return;
+      }
+
+      const newUser = { name, email, phone, education, targetExam: target, password };
+      users.push(newUser);
+      saveRegisteredUsers(users);
+
+      state.currentUser = { name, email, role: 'student', initials: getInitials(name), education, targetExam: target, phone };
+      saveSessionUser(state.currentUser);
+      showToast(`Account created! Welcome, ${name} 🎉`);
+      navigate('dashboard');
+    }
+
+    function renderLoginPage() {
+      return `
+        <div class="min-h-[80vh] flex items-center justify-center py-12">
+          <div class="w-full max-w-md">
+
+            <!-- Logo -->
+            <div class="text-center mb-8 space-y-2">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mx-auto">
+                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+              </div>
+              <h2 class="text-2xl font-extrabold text-slate-900">Welcome Back!</h2>
+              <p class="text-sm text-slate-500">Sign in to access your Exam Awareness dashboard</p>
+            </div>
+
+            <!-- Card -->
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+
+              <!-- Role Tabs -->
+              <div class="flex bg-slate-100 rounded-xl p-1 mb-6 gap-1">
+                <button onclick="switchLoginTab('student')" id="tab-student"
+                  class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-blue-700 shadow-sm">
+                  🎓 Student Login
+                </button>
+                <button onclick="switchLoginTab('admin')" id="tab-admin"
+                  class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500 hover:text-slate-800">
+                  🛡️ Admin Login
+                </button>
+              </div>
+
+              <!-- Role hint -->
+              <div id="login-role-hint" class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 font-medium">
+                👨‍🎓 <strong>Students:</strong> Login with the email and password you registered with.
+              </div>
+
+              <form onsubmit="loginUser(event)" class="space-y-4">
+                <input type="hidden" id="login-role" value="student">
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
+                  <input type="email" id="login-email" required placeholder="your@email.com"
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Password</label>
+                  <div class="relative">
+                    <input type="password" id="login-password" required placeholder="Enter your password"
+                      class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition pr-10">
+                    <button type="button" onclick="togglePwdVisibility('login-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Error Message -->
+                <p id="login-error" class="text-xs text-red-600 font-semibold min-h-[1rem]"></p>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition">
+                  Sign In →
+                </button>
+              </form>
+
+              <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-500">Don't have a student account?
+                  <button onclick="navigate('register')" class="text-blue-600 font-bold hover:underline ml-1">Register Free →</button>
+                </p>
+              </div>
+
+              <!-- Demo Quick Login -->
+              <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-2">
+                <p class="font-bold text-amber-800 uppercase tracking-wider">⚡ Quick Demo Login</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="quickLogin('student')" class="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-800 font-bold hover:bg-blue-200 transition">
+                    Demo Student
+                  </button>
+                  <button onclick="quickLogin('admin')" class="px-3 py-1.5 rounded-lg bg-purple-100 text-purple-800 font-bold hover:bg-purple-200 transition">
+                    Demo Admin
+                  </button>
+                </div>
+                <p class="text-amber-600">These buttons log you in instantly for testing.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRegisterPage() {
+      return `
+        <div class="min-h-[80vh] flex items-center justify-center py-12">
+          <div class="w-full max-w-lg">
+
+            <!-- Logo -->
+            <div class="text-center mb-8 space-y-2">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 mx-auto">
+                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+              </div>
+              <h2 class="text-2xl font-extrabold text-slate-900">Create Student Account</h2>
+              <p class="text-sm text-slate-500">Free registration for all college students & aspirants</p>
+            </div>
+
+            <!-- Card -->
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+              <form onsubmit="registerStudent(event)" class="space-y-4 text-sm">
+
+                <!-- Full Name -->
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name *</label>
+                  <input type="text" id="reg-full-name" required placeholder="e.g. Aarav Sharma"
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition">
+                </div>
+
+                <!-- Email & Phone -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
+                    <input type="email" id="reg-email-new" required placeholder="your@email.com"
+                      class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Mobile / WhatsApp</label>
+                    <input type="tel" id="reg-phone-new" placeholder="+91 98765 43210"
+                      class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                  </div>
+                </div>
+
+                <!-- Education & Target Exam -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Education Level</label>
+                    <select id="reg-edu-new" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                      <option>12th Standard</option>
+                      <option>Undergraduate (1st / 2nd Year)</option>
+                      <option selected>Undergraduate (Final Year)</option>
+                      <option>Completed Graduation</option>
+                      <option>Post Graduate</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Exam</label>
+                    <select id="reg-target-new" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                      <option>UPSC Civil Services</option>
+                      <option>SSC CGL / CHSL</option>
+                      <option>Banking (IBPS &amp; SBI PO)</option>
+                      <option>Railways RRB NTPC</option>
+                      <option>GATE &amp; PSUs</option>
+                      <option>Defence (CDS / NDA / AFCAT)</option>
+                      <option>State PSC (MPSC)</option>
+                      <option>JEE / NEET</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Password & Confirm -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Password *</label>
+                    <div class="relative">
+                      <input type="password" id="reg-password-new" required placeholder="Min 6 characters"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none transition pr-10">
+                      <button type="button" onclick="togglePwdVisibility('reg-password-new', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Confirm Password *</label>
+                    <div class="relative">
+                      <input type="password" id="reg-confirm-new" required placeholder="Re-enter password"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none transition pr-10">
+                      <button type="button" onclick="togglePwdVisibility('reg-confirm-new', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Error -->
+                <p id="register-error" class="text-xs text-red-600 font-semibold min-h-[1rem]"></p>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-500/25 transition">
+                  Create Free Account →
+                </button>
+              </form>
+
+              <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-500">Already have an account?
+                  <button onclick="navigate('login')" class="text-blue-600 font-bold hover:underline ml-1">Sign In →</button>
+                </p>
+                <p class="text-[11px] text-slate-400 mt-2">Admin accounts are managed by the platform coordinator.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ── Login tab switcher ── */
+    function switchLoginTab(role) {
+      document.getElementById('login-role').value = role;
+      const hintEl = document.getElementById('login-role-hint');
+      const tabS = document.getElementById('tab-student');
+      const tabA = document.getElementById('tab-admin');
+
+      if (role === 'admin') {
+        tabA.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-purple-700 shadow-sm';
+        tabS.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500 hover:text-slate-800';
+        hintEl.className = 'mb-4 p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-800 font-medium';
+        hintEl.innerHTML = '🛡️ <strong>Admins:</strong> Use <code>admin@examawareness.in</code> / <code>Admin@2026</code>';
+      } else {
+        tabS.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-blue-700 shadow-sm';
+        tabA.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500 hover:text-slate-800';
+        hintEl.className = 'mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 font-medium';
+        hintEl.innerHTML = '👨‍🎓 <strong>Students:</strong> Login with the email and password you registered with.';
+      }
+    }
+
+    /* ── Password visibility toggle ── */
+    function togglePwdVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    /* ── Quick demo login ── */
+    function quickLogin(role) {
+      if (role === 'admin') {
+        state.currentUser = { name: 'Admin Officer', email: 'admin@examawareness.in', role: 'admin', initials: 'AO' };
+        saveSessionUser(state.currentUser);
+        showToast('Logged in as Admin! 🛡️');
+        navigate('admin');
+      } else {
+        state.currentUser = { name: 'Demo Student', email: 'demo@student.in', role: 'student', initials: 'DS', education: 'Undergraduate (Final Year)', targetExam: 'UPSC Civil Services' };
+        saveSessionUser(state.currentUser);
+        showToast('Logged in as Demo Student! 🎓');
+        navigate('dashboard');
+      }
+    }
+
+    /* ── Restore session on page load ── */
+    (function restoreSession() {
+      const saved = loadSessionUser();
+      if (saved) { state.currentUser = saved; }
+    })();
 
     renderView();
   </script>
